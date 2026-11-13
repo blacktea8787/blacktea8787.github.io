@@ -212,7 +212,7 @@ button{font:inherit;cursor:pointer;border:0}
       <div class="round-no" id="rNo"></div>
       <div class="song"><small>歌曲</small><span id="rSong"></span></div>
       <div class="pair">
-        <div class="who hide" id="rFromBox"><small>送禮</small><b id="rFrom">？？？</b></div>
+        <div class="who shown" id="rFromBox"><small id="rFromLabel">送禮</small><b id="rFrom"></b></div>
         <div class="arrow">→</div>
         <div class="who recv"><small id="rToLabel">收禮</small><b id="rTo"></b></div>
       </div>
@@ -236,7 +236,7 @@ button{font:inherit;cursor:pointer;border:0}
         <button class="btn host" id="hStep" type="button" style="flex:1.4"></button>
       </div>
       <div class="row" id="giverBar" hidden>
-        <div class="bar-msg gold" style="flex:1;padding:12px 8px">這是你送的禮物，別說出來</div>
+        <div class="bar-msg gold" style="flex:1;padding:12px 8px">你是送禮者，禮物別說出來</div>
         <button class="btn green" id="gJudge" type="button">判定猜測</button>
       </div>
       <div class="bar-msg" id="rMsg" hidden></div>
@@ -456,10 +456,8 @@ function renderRound(s, host){
   $('rSong').textContent = r.song;
   $('rTo').textContent = r.receiverName;
   $('rToLabel').textContent = r.iAmReceiver ? '收禮（就是你！）' : '收禮';
-  const fromBox = $('rFromBox');
-  if (r.revealed) { $('rFrom').textContent = r.giverName; fromBox.className = 'who shown'; }
-  else if (r.iAmGiver) { $('rFrom').textContent = '你（保密）'; fromBox.className = 'who'; }
-  else { $('rFrom').textContent = '？？？'; fromBox.className = 'who hide'; }
+  $('rFrom').textContent = r.giverName;
+  $('rFromLabel').textContent = r.iAmGiver ? '送禮（就是你！）' : '送禮';
   show($('rGiftLine'), r.revealed);
   if (r.revealed) $('rGift').textContent = r.gift;
 
