@@ -194,7 +194,7 @@ footer{text-align:center;margin-top:20px}
         <input id="fGuess" maxlength="40" placeholder="輸入你的猜測">
         <button class="btn green" type="submit">猜</button>
       </form>
-      <p class="muted" id="guessHint" style="margin:8px 0 0">只有你看得到自己的猜測，可以猜很多次。</p>
+      <p class="muted" id="guessHint" style="margin:8px 0 0">可以猜很多次。猜錯的答案大家都看得到，猜對的答案不會公開。</p>
       <div class="chips" id="myGuesses" style="margin-top:10px"></div>
     </div>
 
@@ -208,6 +208,12 @@ footer{text-align:center;margin-top:20px}
       <h2>已猜對的人 <span id="cCount"></span></h2>
       <div class="chips" id="cList"></div>
       <p class="muted" id="cEmpty" style="margin:0">還沒有人猜對…</p>
+    </div>
+
+    <div class="card">
+      <h2>猜錯的答案 <span id="wCount"></span></h2>
+      <ul class="list" id="wList"></ul>
+      <p class="muted" id="wEmpty" style="margin:0">還沒有人猜錯</p>
     </div>
   </section>
 
@@ -458,6 +464,13 @@ function renderRound(s, host){
   $('cCount').textContent = r.correct.length ? `（${r.correct.length}）` : '';
   setHTML($('cList'), r.correct.map(c => `<span class="chip ok">${esc(c.name)}</span>`).join(''));
   show($('cEmpty'), !r.correct.length);
+
+  // 猜錯的答案（公開）
+  const wrong = r.wrongGuesses || [];
+  $('wCount').textContent = wrong.length ? `（${wrong.length}）` : '';
+  setHTML($('wList'), wrong.map(w =>
+    `<li><span class="t"><b>${esc(w.name)}</b>${s.me && w.pid === s.me.id ? '（你）' : ''}：${esc(w.text)}</span></li>`).join(''));
+  show($('wEmpty'), !wrong.length);
 
   if (seenCorrect) {
     const fresh = r.correct.filter(c => !seenCorrect.has(c.pid));
