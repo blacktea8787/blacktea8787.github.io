@@ -2,271 +2,277 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#7a1420">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#2a0a10">
 <title>聖誕交換禮物</title>
 <style>
 :root{
   --bg:#2a0a10; --card:#fffaf2; --ink:#2b1d1d; --muted:#7c6a6a;
   --red:#c8202f; --red-d:#9c1622; --green:#1f7a4a; --green-l:#e3f4ea; --gold:#e8b53a;
-  --line:#ecdcca; --host:#3b2a5c; --host-l:#efeaf8; --radius:18px;
+  --line:#ecdcca; --host:#3b2a5c; --host-l:#efeaf8; --radius:16px;
 }
 *{box-sizing:border-box}
-html,body{margin:0}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none}
 body{
-  min-height:100vh; color:var(--ink);
+  color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
   background:radial-gradient(1200px 600px at 50% -200px,#8a1a28 0%,var(--bg) 60%) fixed,var(--bg);
   -webkit-tap-highlight-color:transparent;
 }
 .snow{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
-.snow i{position:absolute;top:-10px;background:#fff;border-radius:50%;opacity:.6;animation:fall linear infinite}
+.snow i{position:absolute;top:-10px;background:#fff;border-radius:50%;opacity:.55;animation:fall linear infinite}
 @keyframes fall{to{transform:translateY(110vh)}}
-.wrap{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:16px 16px 60px}
-header{text-align:center;color:#fff;padding:10px 0 14px}
-header h1{margin:0;font-size:26px;letter-spacing:3px}
-header .sub{font-size:13px;opacity:.8;margin-top:6px}
-.badge{display:inline-block;border-radius:99px;padding:2px 10px;font-size:12px;font-weight:700;margin-left:6px;vertical-align:middle}
+
+/* ===== 整體版面：固定一個畫面高，不捲動 ===== */
+#app{position:relative;z-index:1;max-width:520px;margin:0 auto;height:var(--appH,100dvh);display:flex;flex-direction:column;
+  padding:8px 12px calc(10px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;gap:8px;color:#fff;padding:2px 2px 8px}
+header h1{margin:0;font-size:18px;letter-spacing:2px;white-space:nowrap}
+header .st{font-size:12px;opacity:.8;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header .hb{background:rgba(255,255,255,.14);color:#fff;border-radius:10px;padding:6px 10px;font-size:13px}
+header .hb.faint{background:none;color:rgba(255,255,255,.3);padding:6px 4px}
+.badge{display:inline-block;border-radius:99px;padding:1px 8px;font-size:11px;font-weight:700;margin-left:4px}
 .badge.sim{background:var(--gold);color:#3a2600}
 .badge.host{background:#cbb8f0;color:var(--host)}
-.card{background:var(--card);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
-.card h2{margin:0 0 12px;font-size:18px}
-label{display:block;font-size:14px;font-weight:600;margin:12px 0 6px}
-input{width:100%;font-size:17px;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);outline:none}
+.badge.err{background:#ffcf9a;color:#5a2a00}
+
+.view{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px}
+.card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.card h2{margin:0 0 10px;font-size:17px}
+.card h3{margin:0 0 6px;font-size:14px;color:var(--muted)}
+.grow{flex:1;min-height:0;display:flex;flex-direction:column}
+.scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.bottom{display:flex;flex-direction:column;gap:8px}
+
+label{display:block;font-size:13px;font-weight:600;margin:8px 0 4px}
+input{width:100%;font-size:16px;padding:11px 13px;border:2px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);outline:none}
 input:focus{border-color:var(--red)}
 button{font:inherit;cursor:pointer;border:0}
-.btn{width:100%;padding:14px;border-radius:14px;font-size:17px;font-weight:700;background:var(--red);color:#fff;margin-top:14px;transition:transform .05s}
+.btn{width:100%;padding:13px;border-radius:14px;font-size:16px;font-weight:700;background:var(--red);color:#fff;transition:transform .05s}
 .btn:active{transform:scale(.98)}
 .btn.green{background:var(--green)}
 .btn.gold{background:var(--gold);color:#3a2600}
 .btn.host{background:var(--host)}
-.btn.ghost{background:transparent;color:var(--muted);border:2px solid var(--line)}
-.btn.small{padding:9px;font-size:15px;margin-top:8px}
+.btn.hostl{background:var(--host-l);color:var(--host)}
+.btn.ghost{background:rgba(255,255,255,.12);color:#fff}
+.btn.line{background:transparent;color:var(--muted);border:2px solid var(--line)}
+.btn.small{padding:8px 12px;font-size:14px;width:auto}
 .btn:disabled{opacity:.45}
 .row{display:flex;gap:8px;align-items:center}
-.row input{flex:1}
-.row .btn{width:auto;margin-top:0;padding:12px 18px;white-space:nowrap}
-.muted{color:var(--muted);font-size:14px}
+.row input{flex:1;min-width:0}
+.row .btn{width:auto;white-space:nowrap}
+.muted{color:var(--muted);font-size:13px}
 .center{text-align:center}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
+.bar-msg{background:rgba(255,255,255,.12);color:#fff;border-radius:14px;padding:13px;text-align:center;font-weight:600}
+.bar-msg.ok{background:var(--green)}
+.bar-msg.gold{background:var(--gold);color:#3a2600}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start}
 .chip{background:#f3e7d8;border-radius:99px;padding:6px 12px;font-size:14px;display:inline-flex;align-items:center;gap:6px}
 .chip.me{background:var(--red);color:#fff}
-.chip.ok{background:var(--green);color:#fff}
-.chip.x{background:#eee;color:#888;text-decoration:line-through}
 .chip .rm{background:rgba(0,0,0,.12);color:inherit;border-radius:50%;width:22px;height:22px;font-size:14px;line-height:22px;padding:0;text-align:center}
-.info dt{font-size:12px;color:var(--muted);margin-top:8px}
-.info dd{margin:2px 0 0;font-size:16px;font-weight:600}
-.round-no{font-size:13px;color:var(--muted);text-align:center;letter-spacing:1px}
-.song-label{text-align:center;font-size:13px;color:var(--muted);margin-top:10px}
-.song{text-align:center;font-size:24px;font-weight:800;margin:6px 0 2px;line-height:1.3;word-break:break-word}
-.to{margin:14px 0 4px;text-align:center;font-size:16px}
-.to b{font-size:22px;color:var(--red)}
-.banner{border-radius:14px;padding:12px 14px;margin-top:12px;font-weight:600;text-align:center}
-.banner.green{background:var(--green-l);color:var(--green)}
-.banner.gold{background:#fff1cc;color:#7a5600}
+
+/* 大廳 */
+.mine{display:flex;gap:10px;align-items:center}
+.mine .info{flex:1;min-width:0;font-size:14px;line-height:1.6}
+.mine .info b{font-size:16px}
+.mine .info div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mine .acts{display:flex;flex-direction:column;gap:6px}
+
+/* 回合：上方 */
+.top{text-align:center;padding:12px 14px}
+.round-no{font-size:12px;color:var(--muted);letter-spacing:1px}
+.song{font-size:22px;font-weight:800;line-height:1.25;margin:2px 0 10px;word-break:break-word}
+.song small{display:block;font-size:11px;color:var(--muted);font-weight:600;letter-spacing:2px}
+.pair{display:flex;align-items:stretch;gap:8px}
+.pair .who{flex:1;min-width:0;border-radius:12px;padding:8px 6px;background:#f3e7d8}
+.pair .who small{display:block;font-size:11px;color:var(--muted);font-weight:600}
+.pair .who b{display:block;font-size:18px;line-height:1.25;word-break:break-word}
+.pair .who.hide b{color:#b8a8a0;letter-spacing:4px}
+.pair .who.recv{background:var(--red);color:#fff}
+.pair .who.recv small{color:rgba(255,255,255,.8)}
+.pair .who.shown{background:var(--green);color:#fff}
+.pair .who.shown small{color:rgba(255,255,255,.8)}
+.pair .arrow{align-self:center;font-size:22px;font-weight:900;color:var(--red)}
+.gift-line{margin-top:10px;font-size:15px}
+.gift-line b{font-size:24px;color:var(--red);display:block;line-height:1.3;word-break:break-word}
+
+/* 回合：中間兩欄 */
+.cols{flex:1;min-height:0;display:grid;grid-template-columns:2fr 3fr;gap:10px}
+.col{display:flex;flex-direction:column;min-height:0;padding:12px 10px}
+.col h3{display:flex;justify-content:space-between}
+.ok-item{display:flex;gap:6px;align-items:center;padding:6px 8px;margin-bottom:6px;border-radius:10px;background:var(--green-l);color:var(--green);font-weight:700;font-size:14px;word-break:break-word}
+.ok-item .n{font-size:12px;opacity:.7;min-width:16px}
+.ok-item.me{background:var(--green);color:#fff}
+.msg{margin:0 0 8px;display:flex;flex-direction:column;align-items:flex-start}
+.msg .who{font-size:11px;color:var(--muted);margin:0 4px 2px}
+.msg .bub{max-width:95%;background:#f0e4d4;border-radius:12px 12px 12px 4px;padding:6px 10px;font-size:15px;word-break:break-word;text-align:left}
+.msg.mine{align-items:flex-end}
+.msg.mine .bub{background:var(--red);color:#fff;border-radius:12px 12px 4px 12px}
+.empty{color:#b3a39a;font-size:13px;text-align:center;margin-top:12px}
+
+/* 結束 */
+.champ{font-size:26px;font-weight:900;color:var(--red);word-break:break-word}
+.rank{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.rank:last-child{border-bottom:0}
+.rank .n{min-width:44px;white-space:nowrap;line-height:1.2;text-align:center;font-weight:800;color:var(--muted)}
+.rank .n.top{color:#b88300}
+.rank .nm{flex:1}
+.rank .s{font-weight:800}
+
+/* 列表（判定／紀錄） */
 .list{list-style:none;margin:0;padding:0}
 .list li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
 .list li:last-child{border-bottom:0}
 .list .t{flex:1;word-break:break-word}
-.tg{padding:6px 12px;border-radius:10px;font-size:13px;font-weight:700;background:#eee;color:#555;white-space:nowrap}
+.tg{padding:7px 12px;border-radius:10px;font-size:13px;font-weight:700;background:#eee;color:#555;white-space:nowrap}
 .tg.on{background:var(--green);color:#fff}
-.reveal{border-top:2px dashed var(--line);margin-top:16px;padding-top:12px}
-.reveal-gift{font-size:30px;font-weight:900;text-align:center;color:var(--red);margin:6px 0 10px;word-break:break-word}
-.rank{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
-.rank:last-child{border-bottom:0}
-.rank .n{min-width:36px;text-align:center;font-weight:800;color:var(--muted)}
-.rank .n.top{color:#b88300}
-.rank .nm{flex:1}
-.rank .s{font-weight:800}
-.hist{padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.hist{padding:10px 0;border-bottom:1px solid var(--line);font-size:14px;line-height:1.6}
 .hist:last-child{border-bottom:0}
-details summary{cursor:pointer;font-weight:700;list-style:none}
-details summary::-webkit-details-marker{display:none}
-/* 主持人區塊：融入各卡片內，用紫色區分 */
-.hostbox{margin-top:16px;padding:14px;border-radius:14px;background:var(--host-l);border:1px solid #d9cff0;text-align:left}
-.hostbox .tag{font-size:12px;font-weight:800;color:var(--host);letter-spacing:1px}
-.hostbox .btn{margin-top:10px}
-.hostbox .hint{font-size:13px;color:#6b5f80;margin-top:6px}
-.hostbox details{margin-top:12px}
-.hostbox summary{font-size:14px;color:var(--host)}
-.hostbox .list li{border-color:#d9cff0}
+.note{background:var(--host-l);color:var(--host);border-radius:10px;padding:8px 10px;font-size:13px;margin-bottom:8px}
+
+/* 底部抽屜 */
+#sheetWrap{position:fixed;inset:0;z-index:35;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);width:100%;max-width:520px;max-height:78%;border-radius:18px 18px 0 0;display:flex;flex-direction:column;
+  padding:12px 16px calc(14px + env(safe-area-inset-bottom))}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.sheet-head b{font-size:17px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.grid .btn{margin-top:0}
-footer{text-align:center;margin-top:20px}
-.host-link{background:none;color:rgba(255,255,255,.28);font-size:12px;padding:8px}
-#hostLogin{max-width:260px;margin:6px auto 0}
-#hostLogin input{font-size:16px;padding:10px;text-align:center;letter-spacing:6px}
-#toast{position:fixed;left:50%;top:14px;transform:translate(-50%,-150%);z-index:30;background:var(--green);color:#fff;
-  padding:12px 18px;border-radius:14px;font-weight:700;box-shadow:0 8px 20px rgba(0,0,0,.3);transition:transform .3s;max-width:90vw;text-align:center}
+
+#toast{position:fixed;left:50%;top:10px;transform:translate(-50%,-160%);z-index:50;background:var(--green);color:#fff;
+  padding:11px 18px;border-radius:14px;font-weight:700;box-shadow:0 8px 20px rgba(0,0,0,.3);transition:transform .3s;max-width:90vw;text-align:center}
 #toast.show{transform:translate(-50%,0)}
 #toast.err{background:var(--red-d)}
-#modal{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
-#modal .box{background:var(--card);border-radius:var(--radius);padding:20px;width:100%;max-width:360px;box-shadow:0 12px 40px rgba(0,0,0,.4)}
+#modal{position:fixed;inset:0;z-index:45;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+#modal .box{background:var(--card);border-radius:18px;padding:20px;width:100%;max-width:360px;box-shadow:0 12px 40px rgba(0,0,0,.4)}
 #modal h3{margin:0 0 8px;font-size:19px}
 #modal p{margin:0;color:var(--muted);font-size:15px;line-height:1.5}
 #modal input{margin-top:12px}
 #modal .row{margin-top:18px}
-#modal .row .btn{flex:1;margin:0}
-.conn{color:#ffcf9a;font-size:12px;text-align:center;margin-bottom:8px}
+#modal .row .btn{flex:1}
 [hidden]{display:none!important}
 </style>
 </head>
 <body>
 <div class="snow" id="snow"></div>
-<div class="wrap">
+<div id="app">
   <header>
     <h1>聖誕交換禮物</h1>
-    <div class="sub"><span id="phaseText">連線中…</span><span id="simBadge" class="badge sim" hidden>模擬中</span><span id="hostBadge" class="badge host" hidden>主持人</span></div>
+    <div class="st"><span id="phaseText">連線中…</span><span id="simBadge" class="badge sim" hidden>模擬中</span><span id="hostBadge" class="badge host" hidden>主持人</span><span id="conn" class="badge err" hidden>連線不穩</span></div>
+    <button class="hb" id="histBtn" type="button" hidden>紀錄</button>
+    <button class="hb" id="setBtn" type="button" hidden>設定</button>
+    <button class="hb faint" id="hostBtn" type="button">主持人</button>
   </header>
-  <div id="conn" class="conn" hidden>連線不穩，重試中…</div>
 
   <!-- ===== 等待階段 ===== -->
-  <section id="vJoin" class="card" hidden>
-    <h2 id="joinTitle">加入交換禮物</h2>
-    <form id="joinForm" autocomplete="off">
-      <label for="fName">你的名稱</label>
-      <input id="fName" maxlength="20" placeholder="例如：小明" required>
-      <label for="fGift">你要送的禮物（保密）</label>
-      <input id="fGift" maxlength="40" placeholder="例如：保溫杯" required>
-      <label for="fSong">一首歌名</label>
-      <input id="fSong" maxlength="60" placeholder="例如：Last Christmas" required>
-      <button class="btn" id="joinBtn" type="submit">加入</button>
-      <button class="btn ghost small" id="cancelEdit" type="button" hidden>取消</button>
-    </form>
-  </section>
-
-  <section id="vMe" class="card" hidden>
-    <h2>你已加入</h2>
-    <dl class="info">
-      <dt>名稱</dt><dd id="myName"></dd>
-      <dt>要送的禮物</dt><dd id="myGift"></dd>
-      <dt>歌名</dt><dd id="mySong"></dd>
-    </dl>
-    <div class="row" style="margin-top:12px">
-      <button class="btn ghost small" id="editBtn" type="button">修改</button>
-      <button class="btn ghost small" id="leaveBtn" type="button">退出</button>
+  <section id="vLobby" class="view" hidden>
+    <div class="card" id="joinCard">
+      <h2 id="joinTitle">加入交換禮物</h2>
+      <form id="joinForm" autocomplete="off">
+        <label for="fName">你的名稱</label>
+        <input id="fName" maxlength="20" placeholder="例如：小明" required>
+        <label for="fGift">你要送的禮物（保密）</label>
+        <input id="fGift" maxlength="40" placeholder="例如：保溫杯" required>
+        <label for="fSong">一首歌名</label>
+        <input id="fSong" maxlength="60" placeholder="例如：Last Christmas" required>
+        <div class="row" style="margin-top:12px">
+          <button class="btn line" id="cancelEdit" type="button" hidden>取消</button>
+          <button class="btn" id="joinBtn" type="submit" style="flex:1">加入</button>
+        </div>
+      </form>
     </div>
-  </section>
-
-  <section id="vPlayers" class="card" hidden>
-    <h2>已加入 <span id="pCount">0</span> 人</h2>
-    <div class="chips" id="pList"></div>
-    <p class="muted center" id="waitText" style="margin:14px 0 0">等待主持人開始遊戲…</p>
-    <div class="hostbox" id="hLobby" hidden>
-      <div class="tag">主持人</div>
-      <button class="btn green" data-act="start" id="hStart" type="button">開始遊戲</button>
-      <button class="btn gold small" data-act="simulate" id="hSim" type="button">模擬：加入 4 個模擬玩家</button>
-      <button class="btn ghost small" data-act="endSim" id="hEndSim" type="button">結束模擬（移除模擬玩家）</button>
-      <div class="hint">點玩家名字旁的 × 可以移除玩家。</div>
+    <div class="card mine" id="meCard">
+      <div class="info">
+        <div><b id="myName"></b></div>
+        <div>禮物：<span id="myGift"></span></div>
+        <div>歌名：<span id="mySong"></span></div>
+      </div>
+      <div class="acts">
+        <button class="btn line small" id="editBtn" type="button">修改</button>
+        <button class="btn line small" id="leaveBtn" type="button">退出</button>
+      </div>
+    </div>
+    <div class="card grow">
+      <h2>已加入 <span id="pCount">0</span> 人</h2>
+      <div class="scroll"><div class="chips" id="pList"></div></div>
+    </div>
+    <div class="bottom">
+      <div class="bar-msg" id="waitText">等待主持人開始遊戲…</div>
+      <div class="row" id="hLobby" hidden>
+        <button class="btn hostl" data-act="simulate" id="hSim" type="button" style="flex:1">模擬（加 4 人）</button>
+        <button class="btn hostl" data-act="endSim" id="hEndSim" type="button" style="flex:1">結束模擬</button>
+        <button class="btn host" data-act="start" id="hStart" type="button" style="flex:1.4">開始遊戲</button>
+      </div>
     </div>
   </section>
 
   <!-- ===== 回合 ===== -->
-  <section id="vRound" hidden>
-    <div class="card">
+  <section id="vRound" class="view" hidden>
+    <div class="card top">
       <div class="round-no" id="rNo"></div>
-      <div class="song-label">這一輪的歌</div>
-      <div class="song" id="rSong"></div>
-      <div class="to">這份禮物送給 <b id="rTo"></b></div>
-      <div id="rBanner"></div>
-
-      <div class="reveal" id="revealBox" hidden>
-        <div class="center muted">禮物是</div>
-        <div class="reveal-gift" id="rGift"></div>
-        <div class="center" id="rFromTo"></div>
+      <div class="song"><small>歌曲</small><span id="rSong"></span></div>
+      <div class="pair">
+        <div class="who hide" id="rFromBox"><small>送禮</small><b id="rFrom">？？？</b></div>
+        <div class="arrow">→</div>
+        <div class="who recv"><small id="rToLabel">收禮</small><b id="rTo"></b></div>
       </div>
+      <div class="gift-line" id="rGiftLine" hidden>禮物是<b id="rGift"></b></div>
+    </div>
 
-      <div class="hostbox" id="hRound" hidden>
-        <div class="tag">主持人</div>
-        <div class="hint" id="hRoundStat"></div>
-        <button class="btn host" id="hStep" type="button"></button>
-        <details id="hGuessDetails">
-          <summary id="hGuessSum">查看所有猜測 / 判定（會看到答案）</summary>
-          <div class="hint">答案：<b id="hAnswer"></b></div>
-          <ul class="list" id="hGuessList"></ul>
-        </details>
+    <div class="cols">
+      <div class="card col">
+        <h3><span>已猜對</span><span id="cCount"></span></h3>
+        <div class="scroll" id="cList"></div>
+      </div>
+      <div class="card col">
+        <h3><span>猜錯的答案</span><span id="wCount"></span></h3>
+        <div class="scroll" id="wList"></div>
       </div>
     </div>
 
-    <div class="card" id="guessBox" hidden>
-      <h2>猜猜禮物是什麼？</h2>
-      <form id="guessForm" class="row" autocomplete="off">
-        <input id="fGuess" maxlength="40" placeholder="輸入你的猜測">
+    <div class="bottom">
+      <div class="row" id="hRound" hidden>
+        <button class="btn hostl" id="hJudge" type="button" style="flex:1">猜測／判定</button>
+        <button class="btn host" id="hStep" type="button" style="flex:1.4"></button>
+      </div>
+      <div class="row" id="giverBar" hidden>
+        <div class="bar-msg gold" style="flex:1;padding:12px 8px">這是你送的禮物，別說出來</div>
+        <button class="btn green" id="gJudge" type="button">判定猜測</button>
+      </div>
+      <div class="bar-msg" id="rMsg" hidden></div>
+      <form id="guessForm" class="row" autocomplete="off" hidden>
+        <input id="fGuess" maxlength="40" placeholder="猜猜禮物是什麼？" enterkeyhint="send">
         <button class="btn green" type="submit">猜</button>
       </form>
-      <p class="muted" id="guessHint" style="margin:8px 0 0">可以猜很多次。猜錯的答案大家都看得到，猜對的答案不會公開。</p>
-      <div class="chips" id="myGuesses" style="margin-top:10px"></div>
-    </div>
-
-    <div class="card" id="judgeBox" hidden>
-      <h2>這是你送的禮物</h2>
-      <p class="muted" style="margin:0 0 8px">別說出來！大家的猜測會出現在這裡，系統會自動判定，你也可以手動點「算對」或取消。</p>
-      <ul class="list" id="judgeList"></ul>
-    </div>
-
-    <div class="card">
-      <h2>已猜對的人 <span id="cCount"></span></h2>
-      <div class="chips" id="cList"></div>
-      <p class="muted" id="cEmpty" style="margin:0">還沒有人猜對…</p>
-    </div>
-
-    <div class="card">
-      <h2>猜錯的答案 <span id="wCount"></span></h2>
-      <ul class="list" id="wList"></ul>
-      <p class="muted" id="wEmpty" style="margin:0">還沒有人猜錯</p>
     </div>
   </section>
 
   <!-- ===== 結束 ===== -->
-  <section id="vFinal" hidden>
+  <section id="vFinal" class="view" hidden>
     <div class="card center">
-      <h2>猜中王</h2>
-      <div class="reveal-gift" id="champ"></div>
+      <h3>猜中王</h3>
+      <div class="champ" id="champ"></div>
       <div class="muted" id="champSub"></div>
-      <div class="hostbox" id="hFinal" hidden>
-        <div class="tag">主持人</div>
-        <button class="btn green" data-act="resetKeep" type="button">再玩一次（保留真人玩家）</button>
-      </div>
     </div>
-    <div class="card">
+    <div class="card grow">
       <h2>猜中排行榜</h2>
-      <div id="board"></div>
+      <div class="scroll" id="board"></div>
+    </div>
+    <div class="bottom">
+      <div class="row">
+        <button class="btn ghost" id="fHist" type="button" style="flex:1">禮物紀錄</button>
+        <button class="btn host" id="hAgain" data-act="resetKeep" type="button" style="flex:1" hidden>再玩一次</button>
+      </div>
     </div>
   </section>
+</div>
 
-  <section id="vSpectate" class="card center" hidden>
-    <p style="margin:0">遊戲已經開始了，你可以在這裡觀看。</p>
-  </section>
-
-  <div class="card" id="histCard" hidden>
-    <details id="histDetails">
-      <summary>禮物紀錄（<span id="hCount">0</span>）</summary>
-      <div id="hList" style="margin-top:8px"></div>
-    </details>
+<!-- 底部抽屜：紀錄／判定／主持人設定 -->
+<div id="sheetWrap" hidden>
+  <div class="sheet">
+    <div class="sheet-head"><b id="sheetTitle"></b><button class="btn line small" id="sheetClose" type="button">關閉</button></div>
+    <div class="scroll" id="sheetBody"></div>
   </div>
-
-  <!-- 主持人設定（登入後才出現） -->
-  <div class="card" id="hSettings" hidden>
-    <details>
-      <summary style="color:var(--host)">主持人設定</summary>
-      <div class="grid" style="margin-top:12px">
-        <button class="btn small ghost" data-act="resetKeep" type="button">重置（保留玩家）</button>
-        <button class="btn small ghost" data-act="resetAll" type="button">全部清除</button>
-        <button class="btn small ghost" data-act="changePw" type="button">修改密碼</button>
-        <button class="btn small ghost" data-act="logout" type="button">登出主持人</button>
-      </div>
-    </details>
-  </div>
-
-  <footer>
-    <button class="host-link" id="hostToggle" type="button">主持人</button>
-    <form id="hostLogin" hidden autocomplete="off">
-      <div class="row">
-        <input id="fPw" type="password" inputmode="numeric" placeholder="密碼" maxlength="20">
-        <button class="btn small" type="submit" style="margin:0">登入</button>
-      </div>
-    </form>
-  </footer>
 </div>
 
 <div id="toast"></div>
@@ -277,7 +283,7 @@ footer{text-align:center;margin-top:20px}
     <p id="mMsg"></p>
     <input id="mInput" hidden>
     <div class="row">
-      <button class="btn ghost" type="button" id="mCancel">取消</button>
+      <button class="btn line" type="button" id="mCancel">取消</button>
       <button class="btn" type="submit" id="mOk">確定</button>
     </div>
   </form>
@@ -299,11 +305,22 @@ let S = null;                        // 最新狀態
 let editing = false;
 let seenCorrect = null;
 let seenRoundKey = '';
+let sheetKind = null;                // 'history' | 'judge' | 'settings'
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function setHTML(el, html){ if (el._h !== html){ el._h = html; el.innerHTML = html; } }
+function setHTML(el, html){ if (el._h !== html){ el._h = html; el.innerHTML = html; return true; } return false; }
 function show(el, on){ el.hidden = !on; }
+
+// 畫面高度跟著可視區域（手機鍵盤彈出時輸入框仍在底部可見）
+function fitViewport(){
+  const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  document.documentElement.style.setProperty('--appH', h + 'px');
+  window.scrollTo(0, 0);
+}
+if (window.visualViewport) { visualViewport.addEventListener('resize', fitViewport); visualViewport.addEventListener('scroll', () => window.scrollTo(0, 0)); }
+window.addEventListener('resize', fitViewport);
+fitViewport();
 
 let toastTimer;
 function toast(msg, err){
@@ -318,7 +335,10 @@ function ask({ title, msg = '', ok = '確定', input = null }){
   $('mMsg').textContent = msg; show($('mMsg'), !!msg);
   $('mOk').textContent = ok;
   const inp = $('mInput'); show(inp, !!input);
-  if (input) { inp.value = ''; inp.type = input.type || 'text'; inp.placeholder = input.placeholder || ''; }
+  if (input) {
+    inp.value = ''; inp.type = input.type || 'text'; inp.placeholder = input.placeholder || '';
+    inp.inputMode = input.inputMode || '';
+  }
   show($('modal'), true);
   if (input) setTimeout(() => inp.focus(), 50);
   return new Promise(res => { modalResolve = res; });
@@ -327,6 +347,12 @@ function closeModal(val){ show($('modal'), false); const r = modalResolve; modal
 $('mForm').addEventListener('submit', (e) => { e.preventDefault(); closeModal($('mInput').hidden ? true : $('mInput').value); });
 $('mCancel').onclick = () => closeModal(null);
 $('modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(null); });
+
+// ===== 底部抽屜 =====
+function openSheet(kind){ sheetKind = kind; renderSheet(); show($('sheetWrap'), true); }
+function closeSheet(){ sheetKind = null; show($('sheetWrap'), false); }
+$('sheetClose').onclick = closeSheet;
+$('sheetWrap').addEventListener('click', (e) => { if (e.target.id === 'sheetWrap') closeSheet(); });
 
 // ===== API =====
 async function api(action, data = {}){
@@ -368,110 +394,114 @@ function apply(s){
 function render(){
   const s = S; if (!s) return;
   const host = isHost();
-  const lobby = s.phase === 'lobby';
   $('phaseText').textContent = PHASE_TEXT[s.phase] || '';
   show($('simBadge'), s.simulation);
   show($('hostBadge'), host);
+  show($('histBtn'), s.history.length > 0 && s.phase !== 'finished');
+  show($('setBtn'), host);
+  show($('hostBtn'), !host);
 
-  show($('vJoin'), lobby && (!s.me || editing));
-  show($('vMe'), lobby && !!s.me && !editing);
-  show($('vPlayers'), lobby);
+  show($('vLobby'), s.phase === 'lobby');
   show($('vRound'), s.phase === 'playing' || s.phase === 'reveal');
   show($('vFinal'), s.phase === 'finished');
-  show($('vSpectate'), !lobby && !s.me && !host);
 
-  show($('hSettings'), host);
-  show($('hostToggle'), !host);
-  if (host) show($('hostLogin'), false);
-
-  if (lobby) renderLobby(s, host);
+  if (s.phase === 'lobby') renderLobby(s, host);
   if (s.round) renderRound(s, host);
   if (s.phase === 'finished') renderFinal(s, host);
-  renderHistory(s);
+
+  if (sheetKind === 'judge' && !(s.round && s.round.guesses)) closeSheet();
+  if (sheetKind === 'settings' && !host) closeSheet();
+  if (sheetKind) renderSheet();
 }
 
 function renderLobby(s, host){
-  $('joinTitle').textContent = s.me ? '修改資料' : (host ? '加入交換禮物（主持人也可以一起玩）' : '加入交換禮物');
-  $('joinBtn').textContent = s.me ? '儲存' : '加入';
-  show($('cancelEdit'), !!s.me);
-  if (s.me) {
+  const joined = !!s.me;
+  show($('joinCard'), !joined || editing);
+  show($('meCard'), joined && !editing);
+  $('joinTitle').textContent = joined ? '修改資料' : (host ? '加入（主持人也可以一起玩）' : '加入交換禮物');
+  $('joinBtn').textContent = joined ? '儲存' : '加入';
+  show($('cancelEdit'), joined);
+  if (joined) {
     $('myName').textContent = s.me.name;
     $('myGift').textContent = s.me.gift;
     $('mySong').textContent = s.me.song;
   }
   $('pCount').textContent = s.players.length;
   setHTML($('pList'), s.players.map(p =>
-    `<span class="chip ${s.me && p.id === s.me.id ? 'me' : ''}">${esc(p.name)}` +
+    `<span class="chip ${joined && p.id === s.me.id ? 'me' : ''}">${esc(p.name)}` +
     (host ? `<button class="rm" type="button" data-kick="${p.id}" data-name="${esc(p.name)}" aria-label="移除">×</button>` : '') +
     `</span>`).join('') || '<span class="muted">還沒有人加入</span>');
-  show($('waitText'), !host);
 
+  show($('waitText'), !host);
   show($('hLobby'), host);
   if (host) {
     const bots = s.players.filter(p => p.isBot).length;
-    const st = $('hStart');
-    st.textContent = `開始遊戲（${s.players.length} 人）`;
-    st.disabled = s.players.length < 2;
+    $('hStart').textContent = `開始遊戲（${s.players.length}）`;
+    $('hStart').disabled = s.players.length < 2;
     show($('hSim'), !bots);
     show($('hEndSim'), bots > 0);
   }
 }
 
+function nearBottom(el){ return el.scrollHeight - el.scrollTop - el.clientHeight < 40; }
+
 function renderRound(s, host){
   const r = s.round;
   const key = s.simulation + ':' + r.index + ':' + r.startedAt;
-  if (key !== seenRoundKey) { seenRoundKey = key; seenCorrect = null; $('fGuess').value = ''; $('hGuessDetails').open = !!r.giverIsBot; }
+  const newRound = key !== seenRoundKey;
+  if (newRound) { seenRoundKey = key; seenCorrect = null; $('fGuess').value = ''; if (sheetKind === 'judge') closeSheet(); }
 
+  // 上方：歌名 + 誰送誰
   $('rNo').textContent = `第 ${r.index + 1} / ${r.total} 組`;
   $('rSong').textContent = r.song;
   $('rTo').textContent = r.receiverName;
-  setHTML($('rBanner'), !r.revealed && r.iAmReceiver ? '<div class="banner gold">這份禮物是給你的！</div>' : '');
+  $('rToLabel').textContent = r.iAmReceiver ? '收禮（就是你！）' : '收禮';
+  const fromBox = $('rFromBox');
+  if (r.revealed) { $('rFrom').textContent = r.giverName; fromBox.className = 'who shown'; }
+  else if (r.iAmGiver) { $('rFrom').textContent = '你（保密）'; fromBox.className = 'who'; }
+  else { $('rFrom').textContent = '？？？'; fromBox.className = 'who hide'; }
+  show($('rGiftLine'), r.revealed);
+  if (r.revealed) $('rGift').textContent = r.gift;
 
-  show($('revealBox'), r.revealed);
-  if (r.revealed) {
-    $('rGift').textContent = r.gift;
-    setHTML($('rFromTo'), `恭喜 <b>${esc(r.receiverName)}</b> 獲得 <b>${esc(r.giverName)}</b> 送的禮物！`);
-  }
+  // 左欄：已猜對
+  $('cCount').textContent = r.correct.length || '';
+  const cl = $('cList');
+  setHTML(cl, r.correct.map((c, i) =>
+    `<div class="ok-item ${s.me && c.pid === s.me.id ? 'me' : ''}"><span class="n">${i + 1}</span><span>${esc(c.name)}</span></div>`).join('')
+    || '<div class="empty">還沒有人猜對</div>');
 
-  // 主持人：直接在回合卡片內操作
+  // 右欄：猜錯的答案（聊天室順序：舊的在上、新的在下）
+  const wrong = (r.wrongGuesses || []).slice().reverse();
+  $('wCount').textContent = wrong.length || '';
+  const wl = $('wList');
+  const stick = newRound || nearBottom(wl);
+  const changed = setHTML(wl, wrong.map(w => {
+    const mine = s.me && w.pid === s.me.id;
+    return `<div class="msg ${mine ? 'mine' : ''}"><div class="who">${mine ? '你' : esc(w.name)}</div><div class="bub">${esc(w.text)}</div></div>`;
+  }).join('') || '<div class="empty">還沒有人猜錯</div>');
+  if (changed && stick) wl.scrollTop = wl.scrollHeight;
+
+  // 底部
   show($('hRound'), host);
   if (host) {
     const last = r.index + 1 >= r.total;
     const step = $('hStep');
     if (!r.revealed) { step.textContent = '公布答案'; step.dataset.act = 'reveal'; }
     else { step.textContent = last ? '公布猜中王' : '下一組'; step.dataset.act = 'next'; }
-    $('hRoundStat').textContent = `猜對 ${r.correct.length} 人・共 ${r.guessCount} 次猜測`;
-    $('hGuessSum').textContent = r.giverIsBot
-      ? '查看所有猜測 / 判定（送禮者是模擬玩家，請協助判定）'
-      : '查看所有猜測 / 判定（會看到答案）';
-    $('hAnswer').textContent = r.giftForHost || '';
-    setHTML($('hGuessList'), judgeItems(r.guesses || [], '還沒有人猜'));
+    $('hJudge').textContent = `猜測／判定（${r.guessCount}）`;
   }
+  show($('giverBar'), r.iAmGiver && !r.revealed);
+  if (r.iAmGiver) $('gJudge').textContent = `判定猜測（${(r.guesses || []).length}）`;
 
-  // 猜測區
-  const canGuess = !r.revealed && !!s.me && !r.iAmGiver;
-  show($('guessBox'), canGuess || (!!s.me && !r.iAmGiver && r.myGuesses.length > 0));
-  show($('guessForm'), canGuess && !r.myCorrect);
-  show($('guessHint'), canGuess && !r.myCorrect);
-  const mg = r.myGuesses.map(g => `<span class="chip ${g.correct ? 'ok' : 'x'}">${esc(g.text)}</span>`).join('');
-  setHTML($('myGuesses'), (r.myCorrect ? '<div class="banner green" style="width:100%;margin:0 0 6px">你猜對了！</div>' : '') + mg);
+  const canGuess = !r.revealed && !!s.me && !r.iAmGiver && !r.myCorrect;
+  show($('guessForm'), canGuess);
+  let msg = '', cls = 'bar-msg';
+  if (r.revealed) { msg = `恭喜 ${r.receiverName} 獲得 ${r.giverName} 送的「${r.gift}」！`; cls += ' gold'; }
+  else if (s.me && r.myCorrect) { msg = '你猜對了！等待公布答案…'; cls += ' ok'; }
+  else if (!s.me && !host) msg = '遊戲進行中，觀看模式';
+  $('rMsg').textContent = msg; $('rMsg').className = cls; show($('rMsg'), !!msg);
 
-  // 送禮者判定區
-  show($('judgeBox'), r.iAmGiver);
-  if (r.iAmGiver) setHTML($('judgeList'), judgeItems(r.guesses || [], '還沒有人猜…'));
-
-  // 猜對的人
-  $('cCount').textContent = r.correct.length ? `（${r.correct.length}）` : '';
-  setHTML($('cList'), r.correct.map(c => `<span class="chip ok">${esc(c.name)}</span>`).join(''));
-  show($('cEmpty'), !r.correct.length);
-
-  // 猜錯的答案（公開）
-  const wrong = r.wrongGuesses || [];
-  $('wCount').textContent = wrong.length ? `（${wrong.length}）` : '';
-  setHTML($('wList'), wrong.map(w =>
-    `<li><span class="t"><b>${esc(w.name)}</b>${s.me && w.pid === s.me.id ? '（你）' : ''}：${esc(w.text)}</span></li>`).join(''));
-  show($('wEmpty'), !wrong.length);
-
+  // 新猜對通知
   if (seenCorrect) {
     const fresh = r.correct.filter(c => !seenCorrect.has(c.pid));
     if (fresh.length) toast(`${fresh.map(c => c.name).join('、')} 猜對了！`);
@@ -479,18 +509,12 @@ function renderRound(s, host){
   seenCorrect = new Set(r.correct.map(c => c.pid));
 }
 
-function judgeItems(list, empty){
-  if (!list.length) return `<li class="muted">${empty}</li>`;
-  return list.map(g => `<li><span class="t"><b>${esc(g.name)}</b>：${esc(g.text)}</span>
-    <button class="tg ${g.correct ? 'on' : ''}" type="button" data-judge="${g.id}" data-val="${g.correct ? 0 : 1}">${g.correct ? '已算對' : '算對'}</button></li>`).join('');
-}
-
 function renderFinal(s, host){
   const top = s.scoreboard[0]?.score || 0;
   const champs = s.scoreboard.filter(p => p.score === top && top > 0);
   $('champ').textContent = champs.length ? champs.map(p => p.name).join('、') : '沒有人猜中';
   $('champSub').textContent = champs.length ? `猜中 ${top} 次，恭喜！` : '';
-  show($('hFinal'), host);
+  show($('hAgain'), host);
   setHTML($('board'), s.scoreboard.map((p, i) => {
     const isTop = p.score === top && top > 0;
     return `<div class="rank"><span class="n ${isTop ? 'top' : ''}">${isTop ? '冠軍' : i + 1}</span>
@@ -498,14 +522,36 @@ function renderFinal(s, host){
   }).join(''));
 }
 
-function renderHistory(s){
-  show($('histCard'), s.history.length > 0);
-  $('hCount').textContent = s.history.length;
-  if (s.phase === 'finished') $('histDetails').open = true;
-  setHTML($('hList'), s.history.slice().reverse().map(h => `<div class="hist">
-    <div><b>第 ${h.index + 1} 組</b>　${esc(h.song)}</div>
-    <div><b>${esc(h.gift)}</b>：${esc(h.giverName)} → ${esc(h.receiverName)}</div>
-    <div class="muted">猜中：${h.correctNames.length ? h.correctNames.map(esc).join('、') : '無'}</div></div>`).join(''));
+function judgeItems(list){
+  if (!list.length) return '<li class="muted">還沒有人猜</li>';
+  return list.map(g => `<li><span class="t"><b>${esc(g.name)}</b>：${esc(g.text)}</span>
+    <button class="tg ${g.correct ? 'on' : ''}" type="button" data-judge="${g.id}" data-val="${g.correct ? 0 : 1}">${g.correct ? '已算對' : '算對'}</button></li>`).join('');
+}
+
+function renderSheet(){
+  const s = S; if (!s || !sheetKind) return;
+  const body = $('sheetBody');
+  if (sheetKind === 'history') {
+    $('sheetTitle').textContent = `禮物紀錄（${s.history.length}）`;
+    setHTML(body, s.history.slice().reverse().map(h => `<div class="hist">
+      <div><b>第 ${h.index + 1} 組</b>　${esc(h.song)}</div>
+      <div><b>${esc(h.gift)}</b>：${esc(h.giverName)} → ${esc(h.receiverName)}</div>
+      <div class="muted">猜中：${h.correctNames.length ? h.correctNames.map(esc).join('、') : '無'}</div></div>`).join('')
+      || '<div class="empty">還沒有紀錄</div>');
+  } else if (sheetKind === 'judge') {
+    const r = s.round;
+    $('sheetTitle').textContent = '所有猜測／判定';
+    let note = '系統會自動判定，意思相同的話可以手動點「算對」，點錯可以再點一次取消。';
+    if (isHost() && !r.iAmGiver) note = `答案：${esc(r.giftForHost || '')}　` + (r.giverIsBot ? '（送禮者是模擬玩家，請協助判定）' : '');
+    setHTML(body, `<div class="note">${note}</div><ul class="list">${judgeItems(r.guesses || [])}</ul>`);
+  } else if (sheetKind === 'settings') {
+    $('sheetTitle').textContent = '主持人設定';
+    setHTML(body, `<div class="grid">
+      <button class="btn line" data-act="resetKeep" type="button">重置（保留玩家）</button>
+      <button class="btn line" data-act="resetAll" type="button">全部清除</button>
+      <button class="btn line" data-act="changePw" type="button">修改密碼</button>
+      <button class="btn line" data-act="logout" type="button">登出主持人</button></div>`);
+  }
 }
 
 // ===== 事件：玩家 =====
@@ -518,6 +564,7 @@ $('joinForm').addEventListener('submit', async (e) => {
     const r = await api('join', data);
     me = { pid: r.pid, token: r.token }; store.set('me', me);
     editing = false;
+    document.activeElement?.blur();
     await api('state');
     toast(wasJoined ? '已儲存' : '加入成功');
   } catch(err) { toast(err.message, true); }
@@ -535,12 +582,31 @@ $('leaveBtn').onclick = async () => {
 };
 $('guessForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const text = $('fGuess').value.trim(); if (!text) return;
+  const inp = $('fGuess');
+  const text = inp.value.trim(); if (!text) return;
+  inp.value = '';
   const r = await act('guess', { text });
-  if (r) { $('fGuess').value = ''; if (r.correct) toast('猜對了！'); else toast('沒猜中，再試試', true); }
+  if (!r) { inp.value = text; return; }
+  if (r.correct) { toast('猜對了！'); inp.blur(); }
+  const wl = $('wList'); wl.scrollTop = wl.scrollHeight;
 });
+$('histBtn').onclick = () => openSheet('history');
+$('fHist').onclick = () => openSheet('history');
+$('setBtn').onclick = () => openSheet('settings');
+$('hJudge').onclick = () => openSheet('judge');
+$('gJudge').onclick = () => openSheet('judge');
 
 // ===== 事件：主持人（每個操作都先在網頁內確認） =====
+$('hostBtn').onclick = async () => {
+  const pw = await ask({ title: '主持人登入', ok: '登入', input: { type: 'password', placeholder: '密碼', inputMode: 'numeric' } });
+  if (pw == null) return;
+  try {
+    const r = await api('hostLogin', { password: pw });
+    hostToken = r.hostToken; store.set('host', hostToken);
+    render(); toast('主持人登入成功');
+  } catch(err) { toast(err.message, true); }
+};
+
 const HOST_ACTIONS = {
   start:     { title: () => `開始遊戲？（${S.players.length} 人）`, msg: '開始後就不能再加入新玩家。', ok: '開始', run: () => act('start', {}, '遊戲開始') },
   reveal:    { title: '公布答案？', msg: '公布後這一組就不能再猜了。', ok: '公布', run: () => act('reveal') },
@@ -563,6 +629,7 @@ document.addEventListener('click', async (e) => {
   }
   const a = e.target.closest('[data-act]');
   if (!a || a.disabled) return;
+  if (a.closest('#sheetWrap')) closeSheet();
   if (a.dataset.act === 'changePw') {
     const pw = await ask({ title: '修改主持人密碼', msg: '至少 4 碼', ok: '儲存', input: { type: 'password', placeholder: '新密碼' } });
     if (pw) act('hostPassword', { newPassword: pw }, '密碼已更新');
@@ -574,21 +641,10 @@ document.addEventListener('click', async (e) => {
   if (await ask({ title, msg: h.msg, ok: h.ok })) h.run();
 });
 
-$('hostToggle').onclick = () => { const f = $('hostLogin'); f.hidden = !f.hidden; if (!f.hidden) $('fPw').focus(); };
-$('hostLogin').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  try {
-    const r = await api('hostLogin', { password: $('fPw').value });
-    hostToken = r.hostToken; store.set('host', hostToken);
-    $('fPw').value = ''; render(); toast('主持人登入成功');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  } catch(err) { toast(err.message, true); }
-});
-
 // 雪花（純 CSS 圓點）
 (() => {
   const box = $('snow');
-  for (let i = 0; i < 26; i++) {
+  for (let i = 0; i < 24; i++) {
     const f = document.createElement('i');
     const d = (3 + Math.random() * 5) + 'px';
     f.style.width = f.style.height = d;
