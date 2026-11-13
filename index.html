@@ -1,12 +1,537 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>WebGL Demo</title>
-    <script src="webgl-demo.js" type="module"></script>
-  </head>
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#7a1420">
+<title>聖誕交換禮物</title>
+<style>
+:root{
+  --bg:#2a0a10; --bg2:#3d0f18; --card:#fffaf2; --ink:#2b1d1d; --muted:#7c6a6a;
+  --red:#c8202f; --red-d:#9c1622; --green:#1f7a4a; --green-l:#e3f4ea; --gold:#e8b53a;
+  --line:#ecdcca; --radius:18px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  min-height:100vh; color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+  background:radial-gradient(1200px 600px at 50% -200px,#8a1a28 0%,var(--bg) 60%) fixed,var(--bg);
+  -webkit-tap-highlight-color:transparent;
+}
+.snow{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.snow i{position:absolute;top:-10px;color:#fff;opacity:.7;animation:fall linear infinite;font-style:normal}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+.wrap{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:16px 16px 120px}
+header{text-align:center;color:#fff;padding:10px 0 14px}
+header h1{margin:0;font-size:26px;letter-spacing:2px}
+header .sub{font-size:13px;opacity:.75;margin-top:4px}
+.badge{display:inline-block;background:var(--gold);color:#3a2600;border-radius:99px;padding:2px 10px;font-size:12px;font-weight:700;margin-left:6px;vertical-align:middle}
+.card{background:var(--card);border-radius:var(--radius);padding:18px;margin-bottom:14px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.card h2{margin:0 0 12px;font-size:18px}
+label{display:block;font-size:14px;font-weight:600;margin:12px 0 6px}
+input{width:100%;font-size:17px;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);outline:none}
+input:focus{border-color:var(--red)}
+button{font:inherit;cursor:pointer;border:0}
+.btn{width:100%;padding:14px;border-radius:14px;font-size:17px;font-weight:700;background:var(--red);color:#fff;margin-top:14px;transition:transform .05s}
+.btn:active{transform:scale(.98)}
+.btn.green{background:var(--green)}
+.btn.gold{background:var(--gold);color:#3a2600}
+.btn.ghost{background:transparent;color:var(--muted);border:2px solid var(--line)}
+.btn.small{padding:9px;font-size:15px;margin-top:8px}
+.btn:disabled{opacity:.5}
+.row{display:flex;gap:8px;align-items:center}
+.row input{flex:1}
+.row .btn{width:auto;margin-top:0;padding:12px 18px;white-space:nowrap}
+.muted{color:var(--muted);font-size:14px}
+.center{text-align:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:#f3e7d8;border-radius:99px;padding:6px 12px;font-size:14px}
+.chip.me{background:var(--red);color:#fff}
+.chip.ok{background:var(--green);color:#fff}
+.chip.x{background:#eee;color:#888;text-decoration:line-through}
+.info dt{font-size:12px;color:var(--muted);margin-top:8px}
+.info dd{margin:2px 0 0;font-size:16px;font-weight:600}
+.round-no{font-size:13px;color:var(--muted);text-align:center;letter-spacing:1px}
+.song{text-align:center;font-size:24px;font-weight:800;margin:6px 0 2px;line-height:1.3;word-break:break-word}
+.song-label{text-align:center;font-size:13px;color:var(--muted);margin-top:10px}
+.to{margin:14px 0 4px;text-align:center;font-size:16px}
+.to b{font-size:22px;color:var(--red)}
+.banner{border-radius:14px;padding:12px 14px;margin-top:12px;font-weight:600;text-align:center}
+.banner.green{background:var(--green-l);color:var(--green)}
+.banner.gold{background:#fff1cc;color:#7a5600}
+.banner.red{background:#fde5e7;color:var(--red-d)}
+.list{list-style:none;margin:0;padding:0}
+.list li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
+.list li:last-child{border-bottom:0}
+.list .t{flex:1;word-break:break-word}
+.tg{padding:6px 12px;border-radius:10px;font-size:13px;font-weight:700;background:#eee;color:#555;white-space:nowrap}
+.tg.on{background:var(--green);color:#fff}
+.reveal-gift{font-size:30px;font-weight:900;text-align:center;color:var(--red);margin:10px 0;word-break:break-word}
+.big-emoji{font-size:54px;text-align:center;line-height:1.1}
+.rank{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.rank:last-child{border-bottom:0}
+.rank .n{width:28px;text-align:center;font-weight:800;color:var(--muted)}
+.rank .nm{flex:1}
+.rank .s{font-weight:800}
+.hist{padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.hist:last-child{border-bottom:0}
+details summary{cursor:pointer;font-weight:700;list-style:none}
+details summary::-webkit-details-marker{display:none}
+footer{text-align:center;margin-top:24px}
+.host-link{background:none;color:rgba(255,255,255,.28);font-size:12px;padding:8px}
+#hostLogin{max-width:260px;margin:6px auto 0}
+#hostLogin input{font-size:16px;padding:10px;text-align:center;letter-spacing:6px}
+#hostPanel{position:fixed;left:0;right:0;bottom:0;z-index:20;background:#1b1414;color:#fff;border-radius:18px 18px 0 0;
+  box-shadow:0 -8px 30px rgba(0,0,0,.4);max-height:72vh;overflow:auto;padding:10px 16px calc(14px + env(safe-area-inset-bottom))}
+#hostPanel .inner{max-width:480px;margin:0 auto}
+#hostPanel .bar{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:15px}
+#hostPanel .bar button{background:#333;color:#fff;border-radius:10px;padding:6px 12px;font-size:13px}
+#hostPanel .muted{color:#b9a9a9}
+#hostPanel .list li{border-color:#333}
+#hostPanel .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+#hostPanel .grid .btn{margin-top:0}
+#hostPanel input{background:#2a2222;border-color:#444;color:#fff}
+#hostPanel.min .body{display:none}
+#toast{position:fixed;left:50%;top:14px;transform:translate(-50%,-120%);z-index:30;background:var(--green);color:#fff;
+  padding:12px 18px;border-radius:14px;font-weight:700;box-shadow:0 8px 20px rgba(0,0,0,.3);transition:transform .3s;max-width:90vw;text-align:center}
+#toast.show{transform:translate(-50%,0)}
+#toast.err{background:var(--red-d)}
+.conn{color:#ffcf9a;font-size:12px;text-align:center;margin-bottom:8px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="snow" id="snow"></div>
+<div class="wrap">
+  <header>
+    <h1>🎄 聖誕交換禮物 🎁</h1>
+    <div class="sub"><span id="phaseText">連線中…</span><span id="simBadge" class="badge" hidden>模擬中</span></div>
+  </header>
+  <div id="conn" class="conn" hidden>⚠️ 連線不穩，重試中…</div>
 
-  <body>
-    <canvas id="glcanvas" width="640" height="480"></canvas>
-  </body>
+  <!-- 加入表單 -->
+  <section id="vJoin" class="card" hidden>
+    <h2 id="joinTitle">🎅 加入交換禮物</h2>
+    <form id="joinForm" autocomplete="off">
+      <label for="fName">你的名稱</label>
+      <input id="fName" maxlength="20" placeholder="例如：小明" required>
+      <label for="fGift">你要送的禮物（保密！）</label>
+      <input id="fGift" maxlength="40" placeholder="例如：保溫杯" required>
+      <label for="fSong">一首歌名</label>
+      <input id="fSong" maxlength="60" placeholder="例如：Last Christmas" required>
+      <button class="btn" id="joinBtn" type="submit">加入</button>
+      <button class="btn ghost small" id="cancelEdit" type="button" hidden>取消</button>
+    </form>
+  </section>
+
+  <!-- 等待大廳 -->
+  <section id="vLobby" hidden>
+    <div class="card" id="myCard">
+      <h2>✅ 你已加入</h2>
+      <dl class="info">
+        <dt>名稱</dt><dd id="myName"></dd>
+        <dt>要送的禮物</dt><dd id="myGift"></dd>
+        <dt>歌名</dt><dd id="mySong"></dd>
+      </dl>
+      <div class="row" style="margin-top:12px">
+        <button class="btn ghost small" id="editBtn" type="button">修改</button>
+        <button class="btn ghost small" id="leaveBtn" type="button">退出</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2>👥 已加入 <span id="pCount">0</span> 人</h2>
+      <div class="chips" id="pList"></div>
+      <p class="muted center" style="margin:14px 0 0">等待主持人開始遊戲… 🎶</p>
+    </div>
+  </section>
+
+  <!-- 回合 -->
+  <section id="vRound" hidden>
+    <div class="card">
+      <div class="round-no" id="rNo"></div>
+      <div class="song-label">🎵 這一輪的歌</div>
+      <div class="song" id="rSong"></div>
+      <div class="to">🎁 這份禮物送給 <b id="rTo"></b></div>
+      <div id="rBanner"></div>
+
+      <div id="revealBox" hidden>
+        <div class="big-emoji">🎉</div>
+        <div class="center muted">禮物是</div>
+        <div class="reveal-gift" id="rGift"></div>
+        <div class="center" id="rFromTo"></div>
+      </div>
+    </div>
+
+    <div class="card" id="guessBox" hidden>
+      <h2>🤔 猜猜禮物是什麼？</h2>
+      <form id="guessForm" class="row" autocomplete="off">
+        <input id="fGuess" maxlength="40" placeholder="輸入你的猜測">
+        <button class="btn green" type="submit">猜！</button>
+      </form>
+      <p class="muted" style="margin:8px 0 0">只有你看得到自己的猜測，可以猜很多次。</p>
+      <div class="chips" id="myGuesses" style="margin-top:10px"></div>
+    </div>
+
+    <div class="card" id="judgeBox" hidden>
+      <h2>🤫 這是你送的禮物！</h2>
+      <p class="muted" style="margin:0 0 8px">別說出來～大家的猜測會出現在這裡，系統會自動判定，你也可以手動點選「猜對」或取消。</p>
+      <ul class="list" id="judgeList"></ul>
+    </div>
+
+    <div class="card">
+      <h2>🌟 已猜對的人 <span id="cCount"></span></h2>
+      <div class="chips" id="cList"></div>
+      <p class="muted" id="cEmpty" style="margin:0">還沒有人猜對…</p>
+    </div>
+  </section>
+
+  <!-- 結束 -->
+  <section id="vFinal" hidden>
+    <div class="card center">
+      <div class="big-emoji">🏆</div>
+      <h2 style="margin-top:6px">猜中王</h2>
+      <div class="reveal-gift" id="champ"></div>
+      <div class="muted" id="champSub"></div>
+    </div>
+    <div class="card">
+      <h2>📊 猜中排行榜</h2>
+      <div id="board"></div>
+    </div>
+  </section>
+
+  <section id="vSpectate" class="card center" hidden>
+    <p style="margin:0">遊戲已經開始了，你可以在這裡觀看 👀</p>
+  </section>
+
+  <div class="card" id="histCard" hidden>
+    <details id="histDetails">
+      <summary>📜 禮物紀錄（<span id="hCount">0</span>）▾</summary>
+      <div id="hList" style="margin-top:8px"></div>
+    </details>
+  </div>
+
+  <footer>
+    <button class="host-link" id="hostToggle" type="button">主持人</button>
+    <form id="hostLogin" hidden autocomplete="off">
+      <div class="row">
+        <input id="fPw" type="password" inputmode="numeric" placeholder="密碼" maxlength="20">
+        <button class="btn small" type="submit" style="margin:0">登入</button>
+      </div>
+    </form>
+  </footer>
+</div>
+
+<!-- 主持人面板 -->
+<div id="hostPanel" hidden>
+  <div class="inner">
+    <div class="bar"><span>🎛️ 主持人控制台</span><button id="hpMin" type="button">收合</button></div>
+    <div class="body">
+      <div id="hpStatus" class="muted" style="margin-top:6px"></div>
+      <div id="hpMain"></div>
+      <details style="margin-top:14px">
+        <summary class="muted">⚙️ 更多設定 ▾</summary>
+        <div class="grid">
+          <button class="btn small ghost" data-act="resetKeep" type="button">重置（保留玩家）</button>
+          <button class="btn small ghost" data-act="resetAll" type="button">全部清除</button>
+          <button class="btn small ghost" data-act="changePw" type="button">修改密碼</button>
+          <button class="btn small ghost" data-act="logout" type="button">登出主持人</button>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ===== 設定 =====
+const API_BASE = new URLSearchParams(location.search).get('api')
+  || 'https://gift-exchange-392447965459.asia-east1.run.app';
+
+// ===== 本機儲存 =====
+const store = {
+  get(k){ try{ return JSON.parse(localStorage.getItem('gx_'+k)); }catch{ return null; } },
+  set(k,v){ try{ v==null ? localStorage.removeItem('gx_'+k) : localStorage.setItem('gx_'+k, JSON.stringify(v)); }catch{} },
+};
+let me = store.get('me');            // {pid, token}
+let hostToken = store.get('host');   // string
+let S = null;                        // 最新狀態
+let editing = false;
+let seenCorrect = null;              // 本輪已看過的猜對者
+let seenRoundKey = '';
+let hostMin = false;
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function setHTML(el, html){ if (el._h !== html){ el._h = html; el.innerHTML = html; } }
+function show(el, on){ el.hidden = !on; }
+
+let toastTimer;
+function toast(msg, err){
+  const t = $('toast'); t.textContent = msg; t.className = 'show' + (err ? ' err' : '');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.className = err ? 'err' : '', 2600);
+}
+
+// ===== API =====
+async function api(action, data = {}){
+  const body = { ...data, pid: me?.pid, token: me?.token, hostToken };
+  const res = await fetch(`${API_BASE}/api/${action}`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+  });
+  const j = await res.json().catch(() => ({ error: '伺服器無回應' }));
+  if (!res.ok) {
+    if (res.status === 401 && action !== 'hostLogin' && hostToken && /主持人/.test(j.error||'')) { hostToken = null; store.set('host', null); }
+    throw new Error(j.error || '發生錯誤');
+  }
+  if (j.state) apply(j.state);
+  return j;
+}
+async function act(action, data, okMsg){
+  try { const r = await api(action, data); if (okMsg) toast(okMsg); return r; }
+  catch(e){ toast(e.message, true); return null; }
+}
+
+// ===== 輪詢 =====
+let pollTimer, failCount = 0;
+async function poll(){
+  clearTimeout(pollTimer);
+  try { await api('state'); failCount = 0; show($('conn'), false); }
+  catch(e){ failCount++; if (failCount > 2) show($('conn'), true); }
+  pollTimer = setTimeout(poll, document.hidden ? 5000 : 1500);
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) poll(); });
+
+// ===== 渲染 =====
+const PHASE_TEXT = { lobby:'等待玩家加入', playing:'猜禮物中！', reveal:'公布答案', finished:'遊戲結束' };
+
+function apply(s){
+  S = s;
+  // 伺服器不認得我（被重置或移除）
+  if (me && !s.me) { me = null; store.set('me', null); }
+  if (hostToken && !s.isHost) { hostToken = null; store.set('host', null); }
+  render();
+}
+
+function render(){
+  const s = S; if (!s) return;
+  $('phaseText').textContent = PHASE_TEXT[s.phase] || '';
+  show($('simBadge'), s.simulation);
+
+  const lobby = s.phase === 'lobby';
+  show($('vJoin'), lobby && (!s.me || editing));
+  show($('vLobby'), lobby && !!s.me && !editing);
+  show($('vRound'), s.phase === 'playing' || s.phase === 'reveal');
+  show($('vFinal'), s.phase === 'finished');
+  show($('vSpectate'), !lobby && !s.me);
+
+  if (lobby) renderLobby(s);
+  if (s.round) renderRound(s);
+  if (s.phase === 'finished') renderFinal(s);
+  renderHistory(s);
+  renderHost(s);
+}
+
+function renderLobby(s){
+  $('joinTitle').textContent = s.me ? '✏️ 修改資料' : '🎅 加入交換禮物';
+  $('joinBtn').textContent = s.me ? '儲存' : '加入';
+  show($('cancelEdit'), !!s.me);
+  if (s.me) {
+    $('myName').textContent = s.me.name;
+    $('myGift').textContent = s.me.gift;
+    $('mySong').textContent = s.me.song;
+  }
+  $('pCount').textContent = s.players.length;
+  setHTML($('pList'), s.players.map(p =>
+    `<span class="chip ${s.me && p.id === s.me.id ? 'me' : ''}">${p.isBot ? '' : '🎅 '}${esc(p.name)}</span>`).join(''));
+}
+
+function renderRound(s){
+  const r = s.round;
+  const key = s.simulation + ':' + r.index + ':' + r.startedAt;
+  if (key !== seenRoundKey) { seenRoundKey = key; seenCorrect = null; $('fGuess').value = ''; }
+
+  $('rNo').textContent = `第 ${r.index + 1} / ${r.total} 組`;
+  $('rSong').textContent = r.song;
+  $('rTo').textContent = r.receiverName;
+
+  let banner = '';
+  if (r.revealed) banner = '';
+  else if (r.iAmReceiver) banner = '<div class="banner gold">🎁 這份禮物是給你的！</div>';
+  setHTML($('rBanner'), banner);
+
+  show($('revealBox'), r.revealed);
+  if (r.revealed) {
+    $('rGift').textContent = r.gift;
+    setHTML($('rFromTo'), `恭喜 <b>${esc(r.receiverName)}</b> 獲得 <b>${esc(r.giverName)}</b> 送的禮物！🎊`);
+  }
+
+  // 猜測區
+  const canGuess = !r.revealed && s.me && !r.iAmGiver;
+  show($('guessBox'), !!(canGuess || (s.me && !r.iAmGiver && r.myGuesses.length)));
+  show($('guessForm'), canGuess && !r.myCorrect);
+  const mg = r.myGuesses.map(g => `<span class="chip ${g.correct ? 'ok' : 'x'}">${esc(g.text)}</span>`).join('');
+  setHTML($('myGuesses'), (r.myCorrect ? '<div class="banner green" style="width:100%;margin:0 0 6px">🎉 你猜對了！</div>' : '') + mg);
+
+  // 送禮者判定區
+  show($('judgeBox'), r.iAmGiver);
+  if (r.iAmGiver) setHTML($('judgeList'), judgeItems(r.guesses || [], '還沒有人猜…'));
+
+  // 猜對的人
+  $('cCount').textContent = r.correct.length ? `（${r.correct.length}）` : '';
+  setHTML($('cList'), r.correct.map(c =>
+    `<span class="chip ok">${s.me && c.pid === s.me.id ? '⭐ ' : ''}${esc(c.name)}</span>`).join(''));
+  show($('cEmpty'), !r.correct.length);
+
+  // 新猜對通知
+  const ids = r.correct.map(c => c.pid);
+  if (seenCorrect) {
+    const fresh = r.correct.filter(c => !seenCorrect.has(c.pid));
+    if (fresh.length) toast(`🌟 ${fresh.map(c => c.name).join('、')} 猜對了！`);
+  }
+  seenCorrect = new Set(ids);
+}
+
+function judgeItems(list, empty){
+  if (!list.length) return `<li class="muted">${empty}</li>`;
+  return list.map(g => `<li><span class="t"><b>${esc(g.name)}</b>：${esc(g.text)}</span>
+    <button class="tg ${g.correct ? 'on' : ''}" data-judge="${g.id}" data-val="${g.correct ? 0 : 1}">${g.correct ? '✓ 猜對' : '算對'}</button></li>`).join('');
+}
+
+function renderFinal(s){
+  const top = s.scoreboard[0]?.score || 0;
+  const champs = s.scoreboard.filter(p => p.score === top && top > 0);
+  $('champ').textContent = champs.length ? champs.map(p => p.name).join('、') : '沒有人猜中 😆';
+  $('champSub').textContent = champs.length ? `猜中 ${top} 次！恭喜！🎉` : '';
+  setHTML($('board'), s.scoreboard.map((p, i) => `<div class="rank"><span class="n">${p.score === top && top > 0 ? '👑' : i + 1}</span>
+    <span class="nm">${esc(p.name)}${s.me && p.id === s.me.id ? '（你）' : ''}</span><span class="s">${p.score} 次</span></div>`).join(''));
+}
+
+function renderHistory(s){
+  show($('histCard'), s.history.length > 0);
+  $('hCount').textContent = s.history.length;
+  if (s.phase === 'finished') $('histDetails').open = true;
+  setHTML($('hList'), s.history.slice().reverse().map(h => `<div class="hist">
+    <div><b>#${h.index + 1}</b> 🎵 ${esc(h.song)}</div>
+    <div>🎁 <b>${esc(h.gift)}</b>：${esc(h.giverName)} → ${esc(h.receiverName)}</div>
+    <div class="muted">猜中：${h.correctNames.length ? h.correctNames.map(esc).join('、') : '無'}</div></div>`).join(''));
+}
+
+// ===== 主持人面板 =====
+function renderHost(s){
+  const on = !!(hostToken && s.isHost);
+  show($('hostPanel'), on);
+  show($('hostToggle'), !on);
+  if (on) show($('hostLogin'), false);
+  if (!on) return;
+  $('hostPanel').classList.toggle('min', hostMin);
+  $('hpMin').textContent = hostMin ? '展開' : '收合';
+
+  const humans = s.players.filter(p => !p.isBot).length, bots = s.players.length - humans;
+  let status = `玩家 ${s.players.length} 人` + (bots ? `（含 ${bots} 個模擬玩家）` : '');
+  let html = '';
+  if (s.phase === 'lobby') {
+    html += `<button class="btn green" data-act="start" ${s.players.length < 2 ? 'disabled' : ''}>▶️ 開始遊戲（${s.players.length} 人）</button>`;
+    if (!bots) html += `<button class="btn gold small" data-act="simulate">🤖 模擬：加入 4 個模擬玩家</button>`;
+    else html += `<button class="btn ghost small" data-act="resetKeep">結束模擬（移除模擬玩家）</button>`;
+    html += `<details style="margin-top:12px"><summary class="muted">👥 管理玩家 ▾</summary><ul class="list">` +
+      s.players.map(p => `<li><span class="t">${esc(p.name)}</span><button class="tg" data-kick="${p.id}" data-name="${esc(p.name)}">移除</button></li>`).join('') +
+      `</ul></details>`;
+  } else if (s.phase === 'playing' || s.phase === 'reveal') {
+    const r = s.round;
+    status += ` ・第 ${r.index + 1}/${r.total} 組 ・猜對 ${r.correct.length} 人 ・共 ${r.guessCount} 次猜測`;
+    if (s.phase === 'playing') html += `<button class="btn gold" data-act="reveal">🎁 公布答案</button>`;
+    else html += `<button class="btn green" data-act="next">${r.index + 1 >= r.total ? '🏆 公布猜中王' : '⏭️ 下一組'}</button>`;
+    const warn = r.giverIsBot ? '（送禮者是模擬玩家，請你協助判定）' : '（會看到大家的猜測與答案）';
+    html += `<details style="margin-top:12px" ${r.giverIsBot ? 'open' : ''}><summary class="muted">🔍 查看猜測 / 判定 ${warn} ▾</summary>
+      <div class="muted" style="margin:6px 0">答案：<b style="color:#fff">${esc(r.giftForHost)}</b></div>
+      <ul class="list">${judgeItems(r.guesses || [], '還沒有人猜')}</ul></details>`;
+  } else if (s.phase === 'finished') {
+    html += `<button class="btn green" data-act="resetKeep">🔄 再玩一次（保留真人玩家）</button>`;
+  }
+  $('hpStatus').textContent = status;
+  setHTML($('hpMain'), html);
+}
+
+// ===== 事件 =====
+$('joinForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const data = { name: $('fName').value, gift: $('fGift').value, song: $('fSong').value };
+  const btn = $('joinBtn'); btn.disabled = true;
+  try {
+    const r = await api('join', data);
+    me = { pid: r.pid, token: r.token }; store.set('me', me);
+    editing = false;
+    // 重新取得以帶上身分
+    await api('state');
+    toast('加入成功！🎄');
+  } catch(err) { toast(err.message, true); }
+  btn.disabled = false;
+});
+$('editBtn').onclick = () => {
+  editing = true;
+  $('fName').value = S.me.name; $('fGift').value = S.me.gift; $('fSong').value = S.me.song;
+  render();
+};
+$('cancelEdit').onclick = () => { editing = false; render(); };
+$('leaveBtn').onclick = async () => {
+  if (!confirm('確定要退出嗎？')) return;
+  if (await act('leave')) { me = null; store.set('me', null); render(); }
+};
+
+$('guessForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const text = $('fGuess').value.trim(); if (!text) return;
+  const r = await act('guess', { text });
+  if (r) { $('fGuess').value = ''; if (r.correct) toast('🎉 猜對了！'); else toast('沒猜中，再試試！', true); }
+});
+
+document.addEventListener('click', async (e) => {
+  const j = e.target.closest('[data-judge]');
+  if (j) return act('judge', { guessId: j.dataset.judge, correct: j.dataset.val === '1' });
+  const k = e.target.closest('[data-kick]');
+  if (k) { if (confirm(`移除 ${k.dataset.name}？`)) act('kick', { playerId: k.dataset.kick }); return; }
+  const a = e.target.closest('[data-act]');
+  if (!a) return;
+  switch (a.dataset.act) {
+    case 'start': if (confirm('開始遊戲？開始後就不能再加入新玩家。')) act('start', {}, '遊戲開始！🎶'); break;
+    case 'reveal': act('reveal'); break;
+    case 'next': act('next'); break;
+    case 'simulate': act('simulate', {}, '已加入 4 個模擬玩家，真人也可以繼續加入'); break;
+    case 'resetKeep': if (confirm('回到等待狀態？（保留真人玩家，移除模擬玩家與遊戲紀錄）')) act('reset', { keepPlayers: true }, '已重置'); break;
+    case 'resetAll': if (confirm('全部清除？所有玩家都要重新加入！')) act('reset', { keepPlayers: false }, '已全部清除'); break;
+    case 'changePw': {
+      const pw = prompt('輸入新密碼（至少 4 碼）'); if (pw) act('hostPassword', { newPassword: pw }, '密碼已更新'); break;
+    }
+    case 'logout': await act('hostLogout'); hostToken = null; store.set('host', null); render(); break;
+  }
+});
+
+$('hostToggle').onclick = () => { const f = $('hostLogin'); f.hidden = !f.hidden; if (!f.hidden) $('fPw').focus(); };
+$('hostLogin').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  try {
+    const r = await api('hostLogin', { password: $('fPw').value });
+    hostToken = r.hostToken; store.set('host', hostToken);
+    $('fPw').value = ''; hostMin = false; render(); toast('主持人登入成功');
+  } catch(err) { toast(err.message, true); }
+});
+$('hpMin').onclick = () => { hostMin = !hostMin; render(); };
+
+// 雪花
+(() => {
+  const box = $('snow');
+  for (let i = 0; i < 22; i++) {
+    const f = document.createElement('i'); f.textContent = '❄';
+    f.style.left = Math.random() * 100 + '%';
+    f.style.fontSize = (8 + Math.random() * 12) + 'px';
+    f.style.animationDuration = (8 + Math.random() * 12) + 's';
+    f.style.animationDelay = (-Math.random() * 20) + 's';
+    box.appendChild(f);
+  }
+})();
+
+poll();
+</script>
+</body>
 </html>
